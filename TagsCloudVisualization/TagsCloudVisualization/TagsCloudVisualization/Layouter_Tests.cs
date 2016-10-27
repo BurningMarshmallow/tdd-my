@@ -1,27 +1,29 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 
 namespace TagsCloudVisualization
 {
     [TestFixture]
-    class Layouter_Tests
+    class LayouterTests
     {
-        private readonly Point center = new Point(400, 400);
-        private CircularCloudLayouter cloudLayouter;
+        private readonly Point _center = new Point(400, 400);
+        private CircularCloudLayouter _cloudLayouter;
 
         [SetUp]
         public void SetUp()
         {
-            cloudLayouter = new CircularCloudLayouter(center);
+            _cloudLayouter = new CircularCloudLayouter(_center);
         }
 
         [Test]
         public void IsFirstRectanglePlacedCorrectly()
         {
-            var newRect = cloudLayouter.PutNextRectangle(new Size(200, 100));
+            var newRect = _cloudLayouter.PutNextRectangle(new Size(200, 100));
 
             Assert.AreEqual(new Rectangle(300, 350, 200, 100), newRect);
-            Assert.AreEqual(center, new Point((newRect.Left + newRect.Right) / 2, (newRect.Bottom + newRect.Top) / 2));
+            Assert.AreEqual(_center, new Point((newRect.Left + newRect.Right) / 2, (newRect.Bottom + newRect.Top) / 2));
         }
 
         [TestCase(200)]
@@ -32,24 +34,24 @@ namespace TagsCloudVisualization
         {
             var rectangleSize = new Size(20, 20);
 
-            for (int i = 0; i < numberOfRectangles; i++)
+            for (var i = 0; i < numberOfRectangles; i++)
             {
-                cloudLayouter.PutNextRectangle(rectangleSize);
+                _cloudLayouter.PutNextRectangle(rectangleSize);
             }
 
-            Assert.AreEqual(numberOfRectangles, cloudLayouter.GetRectangles().Length);
+            Assert.AreEqual(numberOfRectangles, _cloudLayouter.GetRectangles().Length);
         }
 
-        [TestCase(4800, 600)]
+        [TestCase(800, 40)]
         [TestCase(1337, 22)]
         [TestCase(111, 444)]
-        [TestCase(5777, 2232)]
+        [TestCase(300, 300)]
         public void TwoConsequentlyAddedRectangles_DoNotIntersect(int width, int height)
         {
             var rectangleSize = new Size(width, height);
 
-            var first = cloudLayouter.PutNextRectangle(rectangleSize);
-            var second= cloudLayouter.PutNextRectangle(rectangleSize);
+            var first = _cloudLayouter.PutNextRectangle(rectangleSize);
+            var second= _cloudLayouter.PutNextRectangle(rectangleSize);
 
             Assert.False(first.IntersectsWith(second));
         }
@@ -62,19 +64,32 @@ namespace TagsCloudVisualization
         {
             var rectangleSize = new Size(10, 10);
 
-            for (int i = 0; i < numberOfRectangles; i++)
+            for (var i = 0; i < numberOfRectangles; i++)
             {
-                cloudLayouter.PutNextRectangle(rectangleSize);
+                _cloudLayouter.PutNextRectangle(rectangleSize);
             }
-            var rectangles = cloudLayouter.GetRectangles();
+            var rectangles = _cloudLayouter.GetRectangles();
 
-            for (int i = 0; i < numberOfRectangles; i++)
+            for (var i = 0; i < numberOfRectangles; i++)
             {
-                for (int j = i + 1; j < numberOfRectangles; j++)
+                for (var j = i + 1; j < numberOfRectangles; j++)
                 {
                     Assert.False(rectangles[i].IntersectsWith(rectangles[j]));
                 }
             }
+        }
+
+        [TearDown]
+        public void DrawOnFailure()
+        {
+            if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed) return;
+
+            var visualizator = new CloudVisualizer();
+            var dir = TestContext.CurrentContext.TestDirectory;
+            var testName = TestContext.CurrentContext.Test.Name;
+            var path = dir + testName + ".bmp";
+            visualizator.Visualise(_cloudLayouter.GetRectangles(), path);
+            Console.WriteLine("Tag cloud visualization saved to file " + path);
         }
     }
 }

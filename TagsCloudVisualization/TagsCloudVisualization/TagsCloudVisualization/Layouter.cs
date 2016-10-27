@@ -7,29 +7,29 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouter
     {
 
-        private readonly List<Rectangle> Rectangles;
+        private readonly List<Rectangle> _rectangles;
         public Point Center { get; }
-        private readonly Spiral Spiral;
+        private readonly Spiral _spiral;
         public CircularCloudLayouter(Point center)
         {
-            Rectangles = new List<Rectangle>();
+            _rectangles = new List<Rectangle>();
             Center = center;
-            Spiral = new Spiral(center);
+            _spiral = new Spiral(center);
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             Rectangle newRectangle;
-            if (Rectangles.Count == 0)
+            if (_rectangles.Count == 0)
                 newRectangle = GetRectangleFromCenterAndSize(Center, rectangleSize);
             else
             {
-                var lastPoint = GetRectangletUpperLeftPoint(Rectangles[Rectangles.Count - 1]);
+                var lastPoint = GetRectangletUpperLeftPoint(_rectangles[_rectangles.Count - 1]);
                 var currentPoint = GetNextPoint(lastPoint, rectangleSize);
 
                 newRectangle = GetRectangleFromCenterAndSize(currentPoint, rectangleSize);
             }
-            Rectangles.Add(newRectangle);
+            _rectangles.Add(newRectangle);
             return newRectangle;
         }
 
@@ -40,7 +40,7 @@ namespace TagsCloudVisualization
             return new Rectangle(upperLeftPoint, rectangleSize);
         }
 
-        private Point GetRectangletUpperLeftPoint(Rectangle rect)
+        private static Point GetRectangletUpperLeftPoint(Rectangle rect)
         {
             return new Point(rect.Left, rect.Top);
         }
@@ -49,19 +49,19 @@ namespace TagsCloudVisualization
         {
             var point = start;
             while (CantBePlaced(point, rectangleSize))
-                point = Spiral.GenerateNextPoint();
+                point = _spiral.GenerateNextPoint();
             return point;
         }
 
         private bool CantBePlaced(Point point, Size rectangleSize)
         {
             var rect = GetRectangleFromCenterAndSize(point, rectangleSize);
-            return Rectangles.Any(rect.IntersectsWith);
+            return _rectangles.Any(rect.IntersectsWith);
         }
 
         public Rectangle[] GetRectangles()
         {
-            return Rectangles.ToArray();
+            return _rectangles.ToArray();
         }
     }
 }

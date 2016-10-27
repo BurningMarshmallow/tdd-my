@@ -13,7 +13,7 @@ namespace TagsCloudVisualization
             return layouter.GetRectangles();
         }
 
-        static void Main(string[] args)
+        public static void Main()
         {
             var layouter = new CircularCloudLayouter(new Point(400, 400));
             var visualiser = new CloudVisualizer();

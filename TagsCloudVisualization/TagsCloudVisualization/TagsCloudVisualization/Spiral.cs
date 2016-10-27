@@ -5,25 +5,25 @@ namespace TagsCloudVisualization
 {
     class Spiral
     {
-        private readonly Point SpiralCenter;
-        private int CurrentIteration;
-        private const double StartRadius = 0.005;
-        private const double StartAngle = 20;
+        private readonly Point _spiralCenter;
+        private int _currentIteration;
+        private const double StartRadius = 0.1;
+        private const double StartAngle = 40;
 
         public Spiral(Point spiralCenter)
         {
-            SpiralCenter = spiralCenter;
-            CurrentIteration = 1;
+            _spiralCenter = spiralCenter;
+            _currentIteration = 1;
         }
 
         public Point GenerateNextPoint()
         {
-            var radius = StartRadius * CurrentIteration;
-            var angle = StartAngle * CurrentIteration;
+            var radius = StartRadius * _currentIteration;
+            var angle = StartAngle * _currentIteration;
             var x = (int)(radius * Math.Cos(angle));
             var y = (int)(radius * Math.Sin(angle));
-            CurrentIteration++;
-            return new Point(SpiralCenter.X + x, SpiralCenter.Y + y);
+            _currentIteration++;
+            return new Point(_spiralCenter.X + x, _spiralCenter.Y + y);
         }
     }
 }

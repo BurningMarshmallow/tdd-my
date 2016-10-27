@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Drawing.Imaging;
 
 
@@ -6,40 +7,40 @@ namespace TagsCloudVisualization
 {
     class CloudVisualizer
     {
-        private readonly int ImageWidth;
-        private readonly int ImageHeight;
-        private readonly Pen RectangleColor;
-        private readonly Color BackgroundColor;
+        private readonly int _imageWidth;
+        private readonly int _imageHeight;
+        private readonly Pen _rectangleColor;
+        private readonly Color _backgroundColor;
 
         public CloudVisualizer()
         {
-            BackgroundColor = Color.SeaShell;
-            RectangleColor = new Pen(Color.Tomato, 3);
-            ImageWidth = 800;
-            ImageHeight = 800;
+            _backgroundColor = Color.SeaShell;
+            _rectangleColor = new Pen(Color.Tomato, 3);
+            _imageWidth = 800;
+            _imageHeight = 800;
         }
 
         public CloudVisualizer(Pen rectangleColor, Color backgroundColor, int imageWidth, int imageHeight)
         {
-            RectangleColor = rectangleColor;
-            BackgroundColor = backgroundColor;
-            ImageWidth = imageWidth;
-            ImageHeight = imageHeight;
+            _rectangleColor = rectangleColor;
+            _backgroundColor = backgroundColor;
+            _imageWidth = imageWidth;
+            _imageHeight = imageHeight;
         }
 
         public void Visualise(Rectangle[] rectangles, string filename)
         {
-            var bitmap = new Bitmap(ImageWidth, ImageHeight);
+            var bitmap = new Bitmap(_imageWidth, _imageHeight);
             var graphics = Graphics.FromImage(bitmap);
             DrawRectangles(rectangles, graphics);
             bitmap.Save(filename, ImageFormat.Bmp);
         }
 
-        private void DrawRectangles(Rectangle[] rectangles, Graphics graphics)
+        private void DrawRectangles(IEnumerable<Rectangle> rectangles, Graphics graphics)
         {
-            graphics.Clear(BackgroundColor);
+            graphics.Clear(_backgroundColor);
             foreach (var rect in rectangles)
-                graphics.DrawRectangle(RectangleColor, rect);
+                graphics.DrawRectangle(_rectangleColor, rect);
             graphics.Save();
         }
     }
