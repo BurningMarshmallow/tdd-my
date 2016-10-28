@@ -24,7 +24,7 @@ namespace TagsCloudVisualization
             var newRect = _cloudLayouter.PutNextRectangle(new Size(200, 100));
 
             Assert.AreEqual(new Rectangle(300, 350, 200, 100), newRect);
-            Assert.AreEqual(_center, new Point((newRect.Left + newRect.Right) / 2, (newRect.Bottom + newRect.Top) / 2));
+            Assert.AreEqual(_center, newRect.GetCenterOfRectangle());
         }
 
         [TestCase(200)]
