@@ -117,12 +117,12 @@ namespace TagsCloudVisualization
                 _cloudLayouter.PutNextRectangle(rectangleSize);
             }
             var rectangles = _cloudLayouter.GetRectangles();
-            const double Eps = 0.1;
+            const double eps = 0.1;
 
             var outerRectanglesCount = GetOuterRectangles(rectangles);
             var outerRectanglesCoefficent = outerRectanglesCount / rectangles.Length;
 
-            Assert.Less(outerRectanglesCoefficent, Eps);
+            Assert.Less(outerRectanglesCoefficent, eps);
         }
 
         [TearDown]
