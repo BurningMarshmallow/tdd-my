@@ -7,8 +7,8 @@ namespace TagsCloudVisualization
     {
         private readonly Point _spiralCenter;
         private int _currentIteration;
-        private const double StartRadius = 0.1;
-        private const double StartAngle = 40;
+        private const double StartRadius = 0.01;
+        private const double StartAngle = 50;
 
         public Spiral(Point spiralCenter)
         {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Linq;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 
@@ -58,7 +59,6 @@ namespace TagsCloudVisualization
 
         [TestCase(240)]
         [TestCase(33)]
-        [TestCase(1)]
         [TestCase(2)]
         public void ManyAddedRectangles_DoNotIntersect(int numberOfRectangles)
         {
@@ -77,6 +77,52 @@ namespace TagsCloudVisualization
                     Assert.False(rectangles[i].IntersectsWith(rectangles[j]));
                 }
             }
+        }
+
+        private static double GetDistance(double x1, double y1, double x2, double y2)
+        {
+            return Math.Sqrt(Math.Pow((x2 - x1), 2) + Math.Pow((y2 - y1), 2));
+        }
+
+        private static bool IsInsideCircle(Point point, Point circleCenter, int radius)
+        {
+            return GetDistance(point.X, point.Y, circleCenter.X, circleCenter.Y) < radius;
+        }
+
+        private static double GetOuterRectangles(Rectangle[] rectangles)
+        {
+            var rectanglesArea = rectangles.Sum(x => x.Width * x.Height);
+            var circleArea = rectanglesArea * Math.PI / 2;
+            var radius = (int)Math.Ceiling(Math.Sqrt(circleArea / Math.PI));
+            var circleCenter = rectangles[0].GetCenterOfRectangle();
+            double outerRectanglesCount = rectangles.Count(
+                x => !IsInsideCircle(x.GetCenterOfRectangle(), circleCenter, radius));
+            return outerRectanglesCount;
+        }
+
+        [TestCase(3, 228, 1337)]
+        [TestCase(90, 1001, 20)]
+        [TestCase(5, 5, 555)]
+        [TestCase(33, 44, 55)]
+        [TestCase(1, 1, 1)]
+        [TestCase(789, 1, 3)]
+        [TestCase(300, 100, 100)]
+
+        public void CloudForm_IsSimilarToCircle(int numberOfRectangles, int width, int height)
+        {
+            var rectangleSize = new Size(width, height);
+
+            for (var i = 0; i < numberOfRectangles; i++)
+            {
+                _cloudLayouter.PutNextRectangle(rectangleSize);
+            }
+            var rectangles = _cloudLayouter.GetRectangles();
+            const double Eps = 0.1;
+
+            var outerRectanglesCount = GetOuterRectangles(rectangles);
+            var outerRectanglesCoefficent = outerRectanglesCount / rectangles.Length;
+
+            Assert.Less(outerRectanglesCoefficent, Eps);
         }
 
         [TearDown]
