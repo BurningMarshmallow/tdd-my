@@ -5,7 +5,7 @@ namespace TagsCloudVisualization
 {
     class Program
     {
-        public static Rectangle[] GenerateNewLayout(CircularCloudLayouter layouter, int numberOfRectangles)
+        public static Rectangle[] GenerateNewLayout(Layouter layouter, int numberOfRectangles)
         {
             var rnd = new Random();
             for (var i = 0; i < numberOfRectangles; i++)
@@ -15,10 +15,12 @@ namespace TagsCloudVisualization
 
         public static void Main()
         {
-            var layouter = new CircularCloudLayouter(new Point(400, 400));
-            var visualiser = new CloudVisualizer();
-            var testData = GenerateNewLayout(layouter, 250);
-            visualiser.Visualise(testData, "BigTest.bmp");
+            var center = new Point(400, 400);
+            var spiral = new CrossSpiral(center);
+            var layouter = new Layouter(center, spiral);
+            var visualiser = new Visualizer();
+            var testData = GenerateNewLayout(layouter, 50);
+            visualiser.Visualize(testData, "BigTest.bmp");
         }
     }
 }

@@ -5,16 +5,16 @@ using System.Linq;
 
 namespace TagsCloudVisualization
 {
-    public class Layouter
+    public class LayouterWithEndlessSpiral
     {
         private readonly List<Rectangle> rectangles;
         public Point Center { get; }
-        private readonly ISpiral spiral;
-        public Layouter(Point center, ISpiral spiral)
+        private readonly EndlessSpiral spiral;
+        public LayouterWithEndlessSpiral(Point center)
         {
             rectangles = new List<Rectangle>();
             Center = center;
-            this.spiral = spiral;
+            spiral = new EndlessSpiral(center);
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
@@ -24,8 +24,7 @@ namespace TagsCloudVisualization
                 newRectangle = GetRectangleFromCenterAndSize(Center, rectangleSize);
             else
             {
-                var lastPoint = GetRectangletUpperLeftPoint(rectangles[rectangles.Count - 1]);
-                var currentPoint = GetNextPoint(lastPoint, rectangleSize);
+                var currentPoint = GetNextPoint(rectangleSize);
 
                 newRectangle = GetRectangleFromCenterAndSize(currentPoint, rectangleSize);
             }
@@ -40,17 +39,14 @@ namespace TagsCloudVisualization
             return new Rectangle(upperLeftPoint, rectangleSize);
         }
 
-        private static Point GetRectangletUpperLeftPoint(Rectangle rect)
+        private Point GetNextPoint(Size rectangleSize)
         {
-            return new Point(rect.Left, rect.Top);
-        }
-
-        private Point GetNextPoint(Point start, Size rectangleSize)
-        {
-            var point = start;
-            while (CantBePlaced(point, rectangleSize))
-                point = spiral.GenerateNextPoint();
-            return point;
+            foreach (var point in spiral)
+            {
+                if (!CantBePlaced(point, rectangleSize))
+                    return point;
+            }
+            return Center;
         }
 
         private bool CantBePlaced(Point point, Size rectangleSize)

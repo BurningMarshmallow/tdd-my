@@ -3,44 +3,45 @@ using System.Drawing;
 using System.Linq;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
+// ReSharper disable InconsistentNaming
 
 namespace TagsCloudVisualization
 {
     [TestFixture]
-    class LayouterTests
+    class CloudLayouter
     {
-        private readonly Point _center = new Point(400, 400);
-        private CircularCloudLayouter _cloudLayouter;
+        private readonly Point center = new Point(400, 400);
+        private Layouter cloudLayouter;
 
         [SetUp]
         public void SetUp()
         {
-            _cloudLayouter = new CircularCloudLayouter(_center);
+            cloudLayouter = new Layouter(center, new CircleSpiral(center));
         }
 
         [Test]
-        public void IsFirstRectanglePlacedCorrectly()
+        public void FirstRectangleCorrectlyPlaced()
         {
-            var newRect = _cloudLayouter.PutNextRectangle(new Size(200, 100));
+            var newRect = cloudLayouter.PutNextRectangle(new Size(200, 100));
 
             Assert.AreEqual(new Rectangle(300, 350, 200, 100), newRect);
-            Assert.AreEqual(_center, newRect.GetCenterOfRectangle());
+            Assert.AreEqual(center, newRect.GetCenterOfRectangle());
         }
 
         [TestCase(200)]
         [TestCase(1)]
         [TestCase(101)]
         [TestCase(2)]
-        public void AreAllRectanglesSaved_AfterAdding(int numberOfRectangles)
+        public void AllRectanglesSaved_AfterAdding(int numberOfRectangles)
         {
             var rectangleSize = new Size(20, 20);
 
             for (var i = 0; i < numberOfRectangles; i++)
             {
-                _cloudLayouter.PutNextRectangle(rectangleSize);
+                cloudLayouter.PutNextRectangle(rectangleSize);
             }
 
-            Assert.AreEqual(numberOfRectangles, _cloudLayouter.GetRectangles().Length);
+            Assert.AreEqual(numberOfRectangles, cloudLayouter.GetRectangles().Length);
         }
 
         [TestCase(800, 40)]
@@ -51,8 +52,8 @@ namespace TagsCloudVisualization
         {
             var rectangleSize = new Size(width, height);
 
-            var first = _cloudLayouter.PutNextRectangle(rectangleSize);
-            var second= _cloudLayouter.PutNextRectangle(rectangleSize);
+            var first = cloudLayouter.PutNextRectangle(rectangleSize);
+            var second= cloudLayouter.PutNextRectangle(rectangleSize);
 
             Assert.False(first.IntersectsWith(second));
         }
@@ -66,9 +67,9 @@ namespace TagsCloudVisualization
 
             for (var i = 0; i < numberOfRectangles; i++)
             {
-                _cloudLayouter.PutNextRectangle(rectangleSize);
+                cloudLayouter.PutNextRectangle(rectangleSize);
             }
-            var rectangles = _cloudLayouter.GetRectangles();
+            var rectangles = cloudLayouter.GetRectangles();
 
             for (var i = 0; i < numberOfRectangles; i++)
             {
@@ -114,9 +115,9 @@ namespace TagsCloudVisualization
 
             for (var i = 0; i < numberOfRectangles; i++)
             {
-                _cloudLayouter.PutNextRectangle(rectangleSize);
+                cloudLayouter.PutNextRectangle(rectangleSize);
             }
-            var rectangles = _cloudLayouter.GetRectangles();
+            var rectangles = cloudLayouter.GetRectangles();
             const double eps = 0.1;
 
             var outerRectanglesCount = GetOuterRectangles(rectangles);
@@ -130,12 +131,13 @@ namespace TagsCloudVisualization
         {
             if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed) return;
 
-            var visualizator = new CloudVisualizer();
+            var visualizator = new Visualizer();
             var dir = TestContext.CurrentContext.TestDirectory;
             var testName = TestContext.CurrentContext.Test.Name;
             var path = dir + testName + ".bmp";
-            visualizator.Visualise(_cloudLayouter.GetRectangles(), path);
+            visualizator.Visualize(cloudLayouter.GetRectangles(), path);
             Console.WriteLine("Tag cloud visualization saved to file " + path);
         }
     }
 }
+ 

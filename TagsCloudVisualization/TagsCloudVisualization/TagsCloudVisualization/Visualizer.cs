@@ -1,36 +1,37 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+// ReSharper disable InconsistentNaming
 
 
 namespace TagsCloudVisualization
 {
-    class CloudVisualizer
+    class Visualizer
     {
-        private readonly int _imageWidth;
-        private readonly int _imageHeight;
-        private readonly Pen _rectangleColor;
-        private readonly Color _backgroundColor;
+        private readonly int imageWidth;
+        private readonly int imageHeight;
+        private readonly Pen rectangleColor;
+        private readonly Color backgroundColor;
 
-        public CloudVisualizer()
+        public Visualizer()
         {
-            _backgroundColor = Color.SeaShell;
-            _rectangleColor = new Pen(Color.Tomato, 3);
-            _imageWidth = 800;
-            _imageHeight = 800;
+            backgroundColor = Color.SeaShell;
+            rectangleColor = new Pen(Color.Tomato, 3);
+            imageWidth = 800;
+            imageHeight = 800;
         }
 
-        public CloudVisualizer(Pen rectangleColor, Color backgroundColor, int imageWidth, int imageHeight)
+        public Visualizer(Pen rectangleColor, Color backgroundColor, int imageWidth, int imageHeight)
         {
-            _rectangleColor = rectangleColor;
-            _backgroundColor = backgroundColor;
-            _imageWidth = imageWidth;
-            _imageHeight = imageHeight;
+            this.rectangleColor = rectangleColor;
+            this.backgroundColor = backgroundColor;
+            this.imageWidth = imageWidth;
+            this.imageHeight = imageHeight;
         }
 
-        public void Visualise(Rectangle[] rectangles, string filename)
+        public void Visualize(Rectangle[] rectangles, string filename)
         {
-            var bitmap = new Bitmap(_imageWidth, _imageHeight);
+            var bitmap = new Bitmap(imageWidth, imageHeight);
             var graphics = Graphics.FromImage(bitmap);
             DrawRectangles(rectangles, graphics);
             bitmap.Save(filename, ImageFormat.Bmp);
@@ -38,9 +39,9 @@ namespace TagsCloudVisualization
 
         private void DrawRectangles(IEnumerable<Rectangle> rectangles, Graphics graphics)
         {
-            graphics.Clear(_backgroundColor);
+            graphics.Clear(backgroundColor);
             foreach (var rect in rectangles)
-                graphics.DrawRectangle(_rectangleColor, rect);
+                graphics.DrawRectangle(rectangleColor, rect);
             graphics.Save();
         }
     }
